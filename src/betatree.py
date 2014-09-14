@@ -166,6 +166,7 @@ class SFS(betatree):
         pass
 
 if __name__=='__main__':
+    import matplotlib.pyplot as plt
     myT = betatree(100,2)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
@@ -177,4 +178,11 @@ if __name__=='__main__':
     myT = betatree(100,1.5)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
+
+    mySFS = SFS(100,alpha=1)
+    mySFS.getSFS(ntrees=1000)
+    plt.figure()
+    plt.plot(np.linspace(0,1,mySFS.n+3)[1:-1], mySFS.sfs)
+    plt.yscale('log')
+
 
