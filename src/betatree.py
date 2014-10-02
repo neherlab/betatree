@@ -19,10 +19,16 @@ class betatree(object):
     def __init__(self, sample_size, alpha=2):
         self.alpha=alpha
         self.n = sample_size
+        # auxillary arrays
         self.k = np.arange(self.n+1)
-        self.inv_k = 1.0/np.arange(1,self.n+2)
-        self.inv_kkp1 = self.inv_k/np.arange(2,self.n+3)
-        self.cum_sum_inv_kkp1 = np.array([0]+np.cumsum(self.inv_kkp1).tolist())
+        if alpha==1:
+            self.inv_k = 1.0/np.arange(1,self.n+2)
+            self.inv_kkp1 = self.inv_k/np.arange(2,self.n+3)
+            self.cum_sum_inv_kkp1 = np.array([0]+np.cumsum(self.inv_kkp1).tolist())
+        elif alpha>1 and alpha<2:
+            self.normalizer = 1.0/sf.gamma(alpha)/sf.gamma(2-alpha) 
+            self.gamma_ratiom = np.exp(sf.gammaln(self.k-self.alpha) - sf.gammaln(self.k+1))
+            self.gamma_ratiop = np.exp(sf.gammaln(self.k+self.alpha) - sf.gammaln(self.k+1))
 
     def init_tree(self):
         '''
@@ -45,7 +51,7 @@ class betatree(object):
         for clade in self.blocks:
             clade.branch_length+=waiting_time
 
-        #randomly pick some blocks
+        #randomly pick some blocks (there are (p choose k) possibilities)
         merging_blocks = rand.sample(self.k[:len(self.blocks)], merger_size) 
         self.merge_clades(merging_blocks)
 
@@ -53,8 +59,10 @@ class betatree(object):
         '''
         creates a new clade whose children are the merging blocks
         '''
+        # instantiate at Clade object with children given by the merging blocks
         new_clade = Phylo.BaseTree.Clade(clades = [self.blocks[i] 
                                                    for i in merging_blocks])
+        # set the branch length to that of the children
         new_clade.branch_length = self.blocks[merging_blocks[0]].branch_length
         # remove the merging blocks from the active blocks
         for i in sorted(merging_blocks, reverse=True):
@@ -82,13 +90,13 @@ class betatree(object):
         '''
         b=len(self.blocks)
         if self.alpha==1:   #the BSC merger rate
-            dt = rand.expovariate((b-1)) 
+            # the BSC merger rate is simply b-1 = 1 / (sum_k 1/k(k-1))
+            dt = np.random.exponential(1.0/(b-1)) 
         elif self.alpha==2: #the Kingman merger rate
-            dt = rand.expovariate(b*(b-1)/2.0) 
+            dt = np.random.exponential(2.0/b/(b-1)) 
         else: # the general beta coalescent case
-            exptime1 = sf.gamma(2)/(sf.gamma(2-self.alpha)*sf.gamma(self.alpha))
-            exptime2 = sum([1.0*b*np.exp(-sf.gammaln(b-k+1)-sf.gammaln(k+1)+sf.gammaln(k-self.alpha)+sf.gammaln(b-k+self.alpha)) for k in range(b+1)[2:]])
-            dt = rand.expovariate(exptime1*exptime2) #this product gives the Beta coalescent merger rate
+            rate = b*(self.gamma_ratiom[2:b+1]*self.gamma_ratiop[b-2::-1]).sum()*self.normalizer
+            dt = np.random.exponential(1.0/rate) #this product gives the Beta coalescent merger rate
         return dt
 
     def whichp(self,b):
@@ -98,19 +106,19 @@ class betatree(object):
             b: the number of extant lineages.
         '''
         if self.alpha == 1: #BSC case
-            lambs = np.zeros(b)
-            lambs[1:] = 1.0/np.arange(1,b)/np.arange(2,b+1)
-            lambs = np.cumsum(lambs)
-            rand = np.random.uniform(0,self.cum_sum_inv_kkp1[b-1])
-            return np.where(self.cum_sum_inv_kkp1[:b] > rand)[0][0]+1
+            # merger degree is distributed as 1/(k-1)/k, pull a random number from
+            # the range [0,\sum_k<=b  1/(k-1)/k. The cum_sum_kkp1 array is shifted by 2, hence the b-1
+            randvar = np.random.uniform(0,self.cum_sum_inv_kkp1[b-1])
+            # determine the maximal k such that the sum is smaller than rand
+            return np.where(self.cum_sum_inv_kkp1[:b] > randvar)[0][0]+1
         elif self.alpha==2: #Kingman case
             return 2
         else: #other Beta coalescents
-            lambs = np.zeros(b)
-            for k in range(1,b): #the ugly below expression is the full probability for a given Beta coalescent with parameter self.alpha
-                lambs[k] = lambs[k-1]+1.0*np.exp(-sf.gammaln(b-(k+1)+1)-sf.gammaln((k+1)+1)+sf.gammaln((k+1)-self.alpha)+sf.gammaln(b-(k+1)+self.alpha))
-            rand = np.random.uniform(0,lambs[-1])
-            return np.where(lambs > rand)[0][0]+1
+            # calculate the cumulative distribution of the variable part of the merger rate
+            # normalizer and b dependent prefactors omitted
+            cum_rates = np.cumsum(self.gamma_ratiom[2:b+1]*self.gamma_ratiop[b-2::-1])
+            randvar = np.random.uniform(0,cum_rates[-1])
+            return np.where(cum_rates > randvar)[0][0]+2
 
     def coalesce(self):
         '''
@@ -128,61 +136,25 @@ class betatree(object):
         self.clean_up_subtree(self.blocks[0])
         self.BioTree = Phylo.BaseTree.Tree(root=self.blocks[0])
 
-
-class SFS(betatree):
-    '''
-    class the generates many trees and accumulates an SFS
-    '''
-    def __init__(self, sample_size, alpha=2):
-        betatree.__init__(self,sample_size, alpha)
-        self.alleles=[]
-
-    def glob_trees(self, ntrees=10):
-        '''
-        generate many trees, accumulate the SFS
-        parameters:
-        ntrees -- number of trees to generate
-        '''
-        for ti in xrange(ntrees):
-            self.coalesce()
-            self.alleles.append([(clade.weight,clade.branch_length) 
-                                 for clade in self.BioTree.get_terminals()
-                                 +self.BioTree.get_nonterminals()])
-
-    def getSFS(self, ntrees = 10):
-        '''
-        calculate an SFS based on ntrees trees
-        '''
-        self.glob_trees(ntrees)
-        self.sfs = np.zeros(self.n+1)
-        for aset in self.alleles:
-            for w,l in aset:
-                self.sfs[w]+=l
-
-    def binSFS(self, bins=10):
-        '''
-        use the precalcutated SFS and bin it.
-        '''
-        pass
-
 if __name__=='__main__':
     import matplotlib.pyplot as plt
-    myT = betatree(100,2)
+    plt.ion()
+
+    # alpha=2 -> Kingman coalescent tree
+    myT = betatree(100,alpha = 2)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
+    plt.title('Kingman: alpha=2')
 
-    myT = betatree(100,1)
+    # alpha=1 -> Bolthausen-Sznitman coalescent tree
+    myT = betatree(100,alpha = 1)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
+    plt.title('Bolthausen-Sznitman: alpha=1')
 
+    # alpha=1.5 -> general beta coalescent tree
     myT = betatree(100,1.5)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
-
-    mySFS = SFS(100,alpha=1)
-    mySFS.getSFS(ntrees=1000)
-    plt.figure()
-    plt.plot(np.linspace(0,1,mySFS.n+3)[1:-1], mySFS.sfs)
-    plt.yscale('log')
-
+    plt.title('alpha=1.5')
 
