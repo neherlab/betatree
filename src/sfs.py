@@ -4,6 +4,7 @@ author:     Taylor Kessinger & Richard Neher
 date:       10/07/2014
 content:    generate beta coalescent trees and calculate their SFS
 '''
+import os
 import numpy as np
 import random as rand
 import scipy.special as sf
@@ -109,7 +110,7 @@ class SFS(betatree):
 if __name__=='__main__':
     import matplotlib.pyplot as plt
     file_ending = '.dat.gz'
-    calc=True
+    calc=False
     for alpha in [2,1.5, 1]:
         n=1000
         mySFS = SFS(n,alpha=alpha)
@@ -165,5 +166,6 @@ if __name__=='__main__':
     plt.xticks(logit(tick_locs), map(str,tick_locs))
     plt.legend(loc=9)
     plt.xlabel('derived allele frequency')
-    plt.xlabel('site frequency spectrum')
+    plt.ylabel('site frequency spectrum')
     plt.savefig('example_SFS/sfs_logit_binning.pdf')
+    plt.savefig('example_SFS/sfs_logit_binning.png')
