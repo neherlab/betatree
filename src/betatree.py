@@ -143,18 +143,24 @@ if __name__=='__main__':
     # alpha=2 -> Kingman coalescent tree
     myT = betatree(100,alpha = 2)
     myT.coalesce()
-    Phylo.draw(myT.BioTree)
+    myT.BioTree.ladderize()
+    Phylo.draw(myT.BioTree, label_func=lambda x:None)
     plt.title('Kingman: alpha=2')
+    plt.savefig('example_trees/kingman.pdf')
 
     # alpha=1 -> Bolthausen-Sznitman coalescent tree
     myT = betatree(100,alpha = 1)
     myT.coalesce()
-    Phylo.draw(myT.BioTree)
+    myT.BioTree.ladderize()
+    Phylo.draw(myT.BioTree, label_func=lambda x:None)
     plt.title('Bolthausen-Sznitman: alpha=1')
+    plt.savefig('example_trees/bolthausen_sznitman.pdf')
 
     # alpha=1.5 -> general beta coalescent tree
     myT = betatree(100,1.5)
     myT.coalesce()
-    Phylo.draw(myT.BioTree)
+    myT.BioTree.ladderize()
+    Phylo.draw(myT.BioTree, label_func=lambda x:None)
     plt.title('alpha=1.5')
+    plt.savefig('example_trees/alpha_1.5.pdf')
 
