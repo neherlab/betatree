@@ -8,6 +8,10 @@ Contact: richard.neher@tuebingen.mpg.de
 
 Example output of the betatree generator are given as pdf files in example_trees. Example site frequency spectra for different parameters of the beta-coalescent ensemble are provided in example_SFS.
 
+If you use betatree in a publication, please refer to 
+
+Neher, Kessinger, and Shraiman. "Coalescence and Genetic Diversity in Sexual Populations under Selection." PNAS 110: 15836-41. doi:10.1073/pnas.1309697110.
+
 
 ################################################################################
 Tree generation
