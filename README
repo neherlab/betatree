@@ -27,7 +27,7 @@ Site frequency spectra
 
 the script src/sfs.py uses the class betatree to generate many trees and calculate the SFS assuming that mutation are uniformly distributed on the tree. The following three lines will generate an SFS for a sample size 100 and alpha=1.5 by averaging 1000 trees.
 
-    mySFS = SFS(n=100,alpha=1.5)
+    mySFS = SFS(100,alpha=1.5)
     mySFS.getSFS(ntrees=1000)
 
 The sfs is accessible as mySFS.sfs and can be binned using different binning schemes or a user defined binning. 
