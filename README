@@ -18,7 +18,7 @@ Tree generation
 
 the script src/betatree.py provides a class that generates coalescent trees using pseudorandom numbers given an initial sample size n and a parameter alpha of the beta measure of the Lambda coalescent process. The following 3 lines will generate a tree of a sample size of 100 and draw it with the Biopython.Phylo package.
 
-    myT = betatree(100,alpha = 2)
+    myT = betatree(100, alpha = 2)
     myT.coalesce()
     Phylo.draw(myT.BioTree)
 
@@ -31,7 +31,7 @@ Site frequency spectra
 
 the script src/sfs.py uses the class betatree to generate many trees and calculate the SFS assuming that mutation are uniformly distributed on the tree. The following three lines will generate an SFS for a sample size 100 and alpha=1.5 by averaging 1000 trees.
 
-    mySFS = SFS(100,alpha=1.5)
+    mySFS = SFS(100, alpha=1.5)
     mySFS.getSFS(ntrees=1000)
 
 The sfs is accessible as mySFS.sfs and can be binned using different binning schemes or a user defined binning. 
