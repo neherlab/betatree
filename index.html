@@ -1,42 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Betatree : Generate and analyze beta coalescent trees">
+    <title>Betatree by neherlab</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Betatree</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
+    <div class="wrapper">
+      <header>
+        <h1>Betatree</h1>
+        <p>Generate and analyze beta coalescent trees</p>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/rneher/betatree">View on GitHub</a>
+        <p class="view"><a href="https://github.com/neherlab/betatree">View the Project on GitHub <small>neherlab/betatree</small></a></p>
 
-          <h1 id="project_title">Betatree</h1>
-          <h2 id="project_tagline">Generate and analyze beta coalescent trees</h2>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/rneher/betatree/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/rneher/betatree/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
+        <ul>
+          <li><a href="https://github.com/neherlab/betatree/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/neherlab/betatree/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/neherlab/betatree">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
         <h3>
-<a name="site-frequency-spectra-of-beta-coalescent-processes" class="anchor" href="#site-frequency-spectra-of-beta-coalescent-processes"><span class="octicon octicon-link"></span></a>Site frequency spectra of beta coalescent processes</h3>
+<a id="site-frequency-spectra-of-beta-coalescent-processes" class="anchor" href="#site-frequency-spectra-of-beta-coalescent-processes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Site frequency spectra of beta coalescent processes</h3>
 
 <p><img src="https://raw.githubusercontent.com/rneher/betatree/master/example_SFS/sfs_logit_binning.png" alt="Site Frequency Spectra"></p>
 
-<hr><p>betatree is a collection of python scripts to generate trees from the beta coalescent ensemble, calculate properties of those trees and gather statistics across many instances. </p>
+<hr>
+
+<p>betatree is a collection of python scripts to generate trees from the beta coalescent ensemble, calculate properties of those trees and gather statistics across many instances. </p>
 
 <p>Authors: Taylor Kessinger and Richard Neher</p>
 
@@ -45,7 +44,7 @@
 <p>Example output of the betatree generator are given as pdf files in example_trees. Example site frequency spectra for different parameters of the beta-coalescent ensemble are provided in example_SFS.</p>
 
 <h3>
-<a name="tree-generation" class="anchor" href="#tree-generation"><span class="octicon octicon-link"></span></a>Tree generation</h3>
+<a id="tree-generation" class="anchor" href="#tree-generation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tree generation</h3>
 
 <p>the script src/betatree.py provides a class that generates coalescent trees using pseudorandom numbers given an initial sample size n and a parameter alpha of the beta measure of the Lambda coalescent process. The following 3 lines will generate a tree of a sample size of 100 and draw it with the Biopython.Phylo package.</p>
 
@@ -59,7 +58,7 @@ Phylo.draw(myT.BioTree)
 <p>Sample code is appended to the definition of the class as will be exectuted if betatree.py is run as main.</p>
 
 <h3>
-<a name="site-frequency-spectra" class="anchor" href="#site-frequency-spectra"><span class="octicon octicon-link"></span></a>Site frequency spectra</h3>
+<a id="site-frequency-spectra" class="anchor" href="#site-frequency-spectra" aria-hidden="true"><span class="octicon octicon-link"></span></a>Site frequency spectra</h3>
 
 <p>the script src/sfs.py uses the class betatree to generate many trees and calculate the SFS assuming that mutation are uniformly distributed on the tree. The following three lines will generate an SFS for a sample size 100 and alpha=1.5 by averaging 1000 trees.</p>
 
@@ -78,7 +77,7 @@ plt.plot(mySFS.bin_center, mySFS.binned_sfs)
 <p>Sample code is appended to the definition of the class as will be exectuted if sfs.py is run as main.</p>
 
 <h3>
-<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies:</h3>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies:</h3>
 
 <ul>
 <li>python 2.7</li>
@@ -88,17 +87,12 @@ plt.plot(mySFS.bin_center, mySFS.binned_sfs)
 <li>matplotlib for plotting examples</li>
 </ul>
       </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Betatree maintained by <a href="https://github.com/rneher">rneher</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/neherlab">neherlab</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-
+    <script src="javascripts/scale.fix.js"></script>
     
-
   </body>
 </html>
