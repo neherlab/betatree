@@ -5,7 +5,6 @@ date:       10/07/2014
 content:    generate beta coalescent trees and calculate their SFS
 '''
 import numpy as np
-import random as rand
 import scipy.special as sf
 from Bio import Phylo
 
@@ -53,7 +52,7 @@ class betatree(object):
             clade.branch_length+=waiting_time
 
         #randomly pick some blocks (there are (p choose k) possibilities)
-        merging_blocks = rand.sample(self.k[:len(self.blocks)], merger_size)
+        merging_blocks = np.random.choice(self.k[:len(self.blocks)], size=merger_size, replace=False)
         self.merge_clades(merging_blocks)
 
     def merge_clades(self, merging_blocks):
