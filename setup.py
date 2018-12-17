@@ -24,6 +24,11 @@ setup(
     url = "https://github.com/neherlab/betatree",
     packages=['betatree'],
     long_description=read('README'),
+    install_requires = [
+        'biopython>=1.66',
+        'numpy>=1.10.4',
+        'scipy>=0.16.1'
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Science",
